@@ -3,7 +3,36 @@
 # Test files:
 # Media/sound/battle.bin
 # Media/sound/battle_old.bin
-# Media/sound/dsstdfx.bin
 # Media/sound/sys.bin
 
 IDString "SE BIN  "
+
+# number of files in the archive
+Get NUM_FILES Long
+
+For i = 1 To NUM_FILES
+    # read each file entry in the header, jump to the file, extract it.
+    # structure of each file entry in the header:
+    # {
+    #   4 bytes - unknown
+    #   4 bytes - unknown
+    #   4 bytes - unknown
+    #   4 bytes - offset to WAV file
+    # }
+    Get UNK0 Long
+    Get UNK1 Long
+    Get Unk2 Long
+    Get OFFSET_TO_WAV Long
+
+    SavePos CurPos
+
+    GoTo OFFSET_TO_WAV
+    # this should be a WAVE file
+    IDString "RIFF"
+    Get FILE_SIZE Long
+    # save the file
+    log "" OFFSET_TO_WAV FILE_SIZE
+
+    # go back to the archive header
+    GoTo CurPos
+Next i
