@@ -1,0 +1,9 @@
+# Author: Michael Martin
+# Extracts WAV files from inside various *.bin files found inside Media/sound/
+# Test files:
+# Media/sound/battle.bin
+# Media/sound/battle_old.bin
+# Media/sound/dsstdfx.bin
+# Media/sound/sys.bin
+
+IDString "SE BIN  "
