@@ -1,0 +1,63 @@
+// Michael Martin
+// QuickBMS script 
+// Game: Robot Alchemic Drive DEMO
+// Disc: OPM Issue 61 
+// For extracting all files within RAD.EE
+
+// quickbms.exe extractfiles.bms RADDEMO\RAD.EE output
+
+idstring "VFS\x00"
+get NUM_DIRECTORIES long
+get DUMMY0 long				// unknown var 
+get header_size long		// not used
+
+set num_files long 0
+
+for i = 0 < NUM_DIRECTORIES // [0,33]
+	savepos subdir_record // we need this offset to calculate where the folder name is 
+	get subdir_rel_offset_foldername long					
+	get subdir_num_files long
+	get subdir_offset long
+	get subdir_length_of_header long
+	
+	math num_files += subdir_num_files
+	
+	# get directory name
+	# nameloc = (loc BEFORE reading the folder record) + REL
+	math subdir_rel_offset_foldername += subdir_record
+	goto subdir_rel_offset_foldername
+	get directory_name string
+	
+	goto subdir_offset // go to the location of the directory header
+		
+	for j = 0 < subdir_num_files
+		savepos file_entry // we need this offset to calculate where the file name is 
+		get file_size long
+		get file_offset long
+		get file_rel_offset_filename long
+		get file_dummy1 long // unknown var
+		
+		math file_rel_offset_filename += file_entry
+		goto file_rel_offset_filename
+		
+		// get filename and build a full name
+		get FILENAME string
+		set FULLNAME string directory_name
+		string FULLNAME += FILENAME
+		
+		// some files contain japanese characters!
+		// will probably need to set japan localization to see them
+		log FULLNAME file_offset file_size
+		//print "%FULLNAME%"
+		
+		math file_entry += 16 // advance file record by 16 bytes; not happy about this but whatever
+		goto file_entry
+	next j
+	
+	math subdir_record += 16 // go to next directory entry
+	goto subdir_record
+		
+next i
+
+print "Total files: %num_files%"
+ 
