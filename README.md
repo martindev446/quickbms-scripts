@@ -1,2 +1,2 @@
 # QuickBMS Scripts
-QuickBMS scripts I've written for various games.
+QuickBMS scripts for games ranging across different platforms.
